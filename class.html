@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ class_name }} | {{ school_name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('index') }}">Home</a> / {{ class_name }}</div>
+<section class="page-intro"><span class="eyebrow">YOUR CLASSROOM</span><h1>{{ class_name }}</h1></section>
+<div class="subject-grid">
+{% for s in subjects %}
+<a class="subject-card" href="{{ url_for('subject_page', class_name=class_name, subject=s) }}"><span class="subject-icon icon-{{ loop.index }}">{{ ['∑','⚗','◉','π'][loop.index0] }}</span><div><h3>{{ s }}</h3><p>View chapters and videos</p></div><span class="arrow">↗</span></a>
+{% endfor %}
+</div>
+<h2 class="subheading">Available chapters</h2>
+{% if chapters %}
+<div class="chapter-list">{% for ch in chapters %}
+<a class="chapter-row" href="{{ url_for('chapter_page', chapter_id=ch.id) }}"><span class="chapter-number">{{ loop.index }}</span><span class="chapter-text"><b>{{ ch.name }}</b><small>{{ ch.subject }}</small></span><span class="count">{{ ch.video_count }} videos</span><span class="arrow">›</span></a>
+{% endfor %}</div>
+{% else %}<div class="empty"><span>📖</span><h3>Lessons coming soon</h3></div>{% endif %}
+{% endblock %}

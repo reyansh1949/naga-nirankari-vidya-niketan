@@ -1,0 +1,18 @@
+Naga Nirankari Vidya Niketan - Render deployment notes
+
+1. GitHub repository me is folder ke andar ki sabhi files upload karein (ZIP file ko akela upload na karein).
+2. Render > New > Web Service > GitHub repository connect karein.
+3. Root Directory: naga_nirankari_vidya_niketan (agar files repository ke root me upload ki hain, to blank chhodein).
+4. Build Command: pip install -r requirements.txt
+5. Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+6. Environment variables set karein:
+   SECRET_KEY = ek lambi random secret value
+   ADMIN_PASSWORD = apna strong admin password
+   VIDEO_DATA_DIR = /var/data
+   MAX_UPLOAD_MB = 500 (optional)
+7. Persistent Disk: mount path /var/data. Disk availability/price plan Render ke current plans par depend karega.
+8. Pehle deploy se pehle environment variables aur disk configuration set karna behtar hai, taaki database, password hash aur videos /var/data ke andar banein.
+9. Admin login URL: https://YOUR-SERVICE.onrender.com/admin/login
+10. Apna password GitHub code me mat likhein. Sirf Render Environment settings me set karein.
+
+Note: SQLite + local uploaded videos ke liye persistent disk zaroori hai. Render ka default filesystem ephemeral hai. Persistent disk ke liye paid plan ki zaroorat ho sakti hai; current Render pricing/limits check karein.

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ school_name }} | Learn Online{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-badge">📚 YOUR LEARNING SPACE</div>
+  <h1>Learn better.<br><span>Grow brighter.</span></h1>
+</section>
+<div class="section-heading"><div><h2>Choose your class</h2></div></div>
+<div class="class-grid">
+{% for c in classes %}
+<a class="class-card" href="{{ url_for('class_page', class_name=c) }}">
+  <div class="class-art art-{{ loop.index }}"><span>{{ "%02d"|format(loop.index) }}</span><b>✦</b></div>
+  <div class="class-info"><span class="eyebrow">SCHOOL CURRICULUM</span><h3>{{ c }}</h3><p>Physics · Chemistry · Biology · Maths</p><span class="arrow">Explore lessons ↗</span></div>
+</a>
+{% endfor %}
+</div>
+{% endblock %}

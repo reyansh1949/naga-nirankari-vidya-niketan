@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Admin Login | {{ school_name }}{% endblock %}
+{% block content %}
+<div class="login-wrap"><div class="login-card"><div class="login-symbol">🔐</div><span class="eyebrow">RESTRICTED ACCESS</span><h1>Admin Login</h1>
+<form method="post"><label>Admin password</label><input type="password" name="password" placeholder="Enter admin password" required autocomplete="current-password"><button class="btn primary full" type="submit">Login to dashboard →</button></form>
+<a class="back-link" href="{{ url_for('index') }}">← Back to website</a></div></div>
+{% endblock %}

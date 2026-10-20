@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ subject }} · {{ class_name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('index') }}">Home</a> / <a href="{{ url_for('class_page', class_name=class_name) }}">{{ class_name }}</a> / {{ subject }}</div>
+<section class="page-intro"><span class="eyebrow">{{ class_name }}</span><h1>{{ subject }}</h1></section>
+{% if chapters %}<div class="chapter-list">{% for ch in chapters %}
+<a class="chapter-row" href="{{ url_for('chapter_page', chapter_id=ch.id) }}"><span class="chapter-number">{{ "%02d"|format(loop.index) }}</span><span class="chapter-text"><b>{{ ch.name }}</b><small>{{ subject }}</small></span><span class="count">{{ ch.video_count }} videos</span><span class="arrow">›</span></a>
+{% endfor %}</div>{% else %}<div class="empty"><span>📚</span><h3>No chapters yet</h3></div>{% endif %}
+{% endblock %}

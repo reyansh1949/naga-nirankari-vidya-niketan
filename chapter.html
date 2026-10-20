@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ chapter.name }} · {{ school_name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('index') }}">Home</a> / <a href="{{ url_for('class_page', class_name=chapter.class_name) }}">{{ chapter.class_name }}</a> / <a href="{{ url_for('subject_page', class_name=chapter.class_name, subject=chapter.subject) }}">{{ chapter.subject }}</a> / {{ chapter.name }}</div>
+<section class="page-intro"><span class="eyebrow">{{ chapter.class_name }} · {{ chapter.subject }}</span><h1>{{ chapter.name }}</h1></section>
+{% if videos %}
+<div class="video-grid">{% for video in videos %}
+<article class="video-card"><video controls preload="metadata" playsinline src="{{ url_for('video_file', video_id=video.id) }}"></video><div class="video-card-body"><span class="eyebrow">VIDEO LESSON {{ loop.index }}</span><h3>{{ video.title }}</h3><p>Chapter: {{ chapter.name }}</p></div></article>
+{% endfor %}</div>
+{% else %}<div class="empty"><span>▶</span><h3>Videos coming soon</h3></div>{% endif %}
+{% endblock %}

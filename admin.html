@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel | {{ school_name }}{% endblock %}
+{% block content %}
+<div class="admin-header"><div><span class="eyebrow">WEBSITE MANAGEMENT</span><h1>Admin dashboard</h1></div><form method="post" action="{{ url_for('logout') }}"><button class="btn secondary" type="submit">Logout</button></form></div>
+<div class="dashboard-stats"><div><span>CHAPTERS</span><b>{{ chapters|length }}</b></div><div><span>RECENT VIDEOS</span><b>{{ videos|length }}</b></div><div><span>CLASSES</span><b>4</b></div></div>
+<div class="admin-grid">
+<section class="panel"><div class="panel-title"><span class="panel-icon">＋</span><div><h2>Add chapter</h2></div></div>
+<form method="post" action="{{ url_for('add_chapter') }}" class="stack-form">
+<label>Class<select name="class_name" required>{% for c in classes %}<option>{{ c }}</option>{% endfor %}</select></label>
+<label>Subject<select name="subject" required>{% for s in subjects %}<option>{{ s }}</option>{% endfor %}</select></label>
+<label>Chapter name<input name="name" required maxlength="150" placeholder="e.g. Motion"></label>
+<button class="btn primary" type="submit">＋ Add Chapter</button>
+</form></section>
+<section class="panel"><div class="panel-title"><span class="panel-icon">↑</span><div><h2>Upload video</h2></div></div>
+{% if chapters %}
+<form method="post" action="{{ url_for('add_video') }}" enctype="multipart/form-data" class="stack-form">
+<label>Chapter<select name="chapter_id" required>{% for ch in chapters %}<option value="{{ ch.id }}">{{ ch.class_name }} · {{ ch.subject }} · {{ ch.name }}</option>{% endfor %}</select></label>
+<label>Topic / video title<input name="title" required maxlength="180" placeholder="e.g. Speed and velocity"></label>
+<label class="file-label">Video file<input type="file" name="video" accept="video/*,.mkv,.avi" required><small>MP4 recommended · Default max 500 MB</small></label>
+<button class="btn primary" type="submit">↑ Upload Video</button>
+</form>
+{% else %}<div class="empty compact"><span>📁</span></div>{% endif %}
+</section></div>
+<section class="panel wide-panel"><div class="panel-title"><span class="panel-icon">▤</span><div><h2>Your chapters</h2><p>Chapter list and video count</p></div></div>
+{% if chapters %}<div class="table-wrap"><table><thead><tr><th>Class / Subject</th><th>Chapter</th><th>Videos</th><th>Action</th></tr></thead><tbody>{% for ch in chapters %}<tr><td><b>{{ ch.class_name }}</b><small>{{ ch.subject }}</small></td><td>{{ ch.name }}</td><td>{{ ch.video_count }}</td><td><form method="post" action="{{ url_for('delete_chapter', chapter_id=ch.id) }}" onsubmit="return confirm('Delete this chapter and all its videos?')"><button class="btn danger small" type="submit">Delete</button></form></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="muted">No chapters yet.</p>{% endif %}
+</section>
+<section class="panel wide-panel"><div class="panel-title"><span class="panel-icon">▶</span><div><h2>Recent uploaded videos</h2><p>Latest uploads</p></div></div>
+{% if videos %}<div class="uploaded-list">{% for v in videos %}<div class="uploaded-item"><div class="play-mini">▶</div><div class="uploaded-text"><b>{{ v.title }}</b><small>{{ v.class_name }} · {{ v.subject }} · {{ v.chapter_name }}</small></div><form method="post" action="{{ url_for('delete_video', video_id=v.id) }}" onsubmit="return confirm('Delete this video?')"><button class="btn danger small" type="submit">Delete</button></form></div>{% endfor %}</div>{% else %}<p class="muted">No videos uploaded yet.</p>{% endif %}
+</section>
+
+{% endblock %}
