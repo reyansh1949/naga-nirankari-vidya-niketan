@@ -28,4 +28,42 @@
 {% if videos %}<div class="uploaded-list">{% for v in videos %}<div class="uploaded-item"><div class="play-mini">▶</div><div class="uploaded-text"><b>{{ v.title }}</b><small>{{ v.class_name }} · {{ v.subject }} · {{ v.chapter_name }}</small></div><form method="post" action="{{ url_for('delete_video', video_id=v.id) }}" onsubmit="return confirm('Delete this video?')"><button class="btn danger small" type="submit">Delete</button></form></div>{% endfor %}</div>{% else %}<p class="muted">No videos uploaded yet.</p>{% endif %}
 </section>
 
+
+<section class="panel wide-panel">
+<div class="panel-title"><span class="panel-icon">▤</span><div><h2>PDF Management</h2><p>Add and manage clickable PDF links</p></div></div>
+
+{% if edit_pdf %}
+<h3>Edit PDF</h3>
+<form method="post" action="{{ url_for('edit_pdf', pdf_id=edit_pdf.id) }}" class="stack-form">
+<label>PDF Name<input name="title" value="{{ edit_pdf.title }}" maxlength="180" required></label>
+<label>PDF Link<input name="url" type="url" value="{{ edit_pdf.url }}" required></label>
+<button class="btn primary" type="submit">Save Changes</button>
+<a href="{{ url_for('admin') }}">Cancel edit</a>
+</form>
+{% else %}
+<form method="post" action="{{ url_for('add_pdf') }}" class="stack-form">
+<label>PDF Name<input name="title" maxlength="180" placeholder="e.g. Class 12 Physics Notes" required></label>
+<label>PDF Link<input name="url" type="url" placeholder="https://example.com/notes.pdf" required></label>
+<button class="btn primary" type="submit">＋ Add PDF</button>
+</form>
+{% endif %}
+
+<h3>Uploaded PDF Links</h3>
+{% if pdfs %}
+<div class="uploaded-list">
+{% for p in pdfs %}
+<div class="uploaded-item">
+<div class="play-mini">{{ loop.index }}</div>
+<div class="uploaded-text"><b>{{ p.title }}</b><small>{{ p.url }}</small></div>
+<a class="btn secondary small" href="{{ url_for('admin', edit_pdf=p.id) }}">Edit</a>
+<form method="post" action="{{ url_for('delete_pdf', pdf_id=p.id) }}" onsubmit="return confirm('Delete this PDF link?')">
+<button class="btn danger small" type="submit">Delete</button>
+</form>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p class="muted">No PDF links added yet.</p>
+{% endif %}
+</section>
 {% endblock %}

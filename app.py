@@ -3,6 +3,7 @@ import sqlite3
 import secrets
 from functools import wraps
 from pathlib import Path
+from urllib.parse import urlsplit
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -48,6 +49,14 @@ def init_db():
         )""")
 
 init_db()
+
+with db() as conn:
+    conn.execute("""CREATE TABLE IF NOT EXISTS pdf_links (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        url TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )""")
 
 def admin_password_hash():
     password = os.environ.get("ADMIN_PASSWORD", "ChangeMe123!")
@@ -140,8 +149,16 @@ def admin():
     videos = conn.execute(
         "SELECT v.*, c.name AS chapter_name, c.class_name, c.subject FROM videos v JOIN chapters c ON c.id=v.chapter_id ORDER BY v.id DESC LIMIT 50"
     ).fetchall()
+    pdfs = conn.execute("SELECT * FROM pdf_links ORDER BY id").fetchall()
+    edit_id = request.args.get("edit_pdf", type=int)
+    edit_pdf = conn.execute(
+        "SELECT * FROM pdf_links WHERE id=?", (edit_id,)
+    ).fetchone() if edit_id else None
     conn.close()
-    return render_template("admin.html", chapters=chapters, videos=videos)
+    return render_template(
+        "admin.html", chapters=chapters, videos=videos,
+        pdfs=pdfs, edit_pdf=edit_pdf
+    )
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def login():
@@ -240,6 +257,64 @@ def delete_chapter(chapter_id):
             (UPLOAD_DIR / v["filename"]).unlink(missing_ok=True)
         flash("The chapter and its videos have been deleted.", "success")
     conn.close()
+    return redirect(url_for("admin"))
+
+
+@app.route("/pdfs")
+def pdfs_page():
+    with db() as conn:
+        pdfs = conn.execute("SELECT * FROM pdf_links ORDER BY id").fetchall()
+    return render_template("pdfs.html", pdfs=pdfs)
+
+
+def valid_pdf_url(value):
+    try:
+        parsed = urlsplit(value)
+        return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+    except Exception:
+        return False
+
+
+@app.route("/admin/pdf", methods=["POST"])
+@admin_required
+def add_pdf():
+    title = request.form.get("title", "").strip()
+    url = request.form.get("url", "").strip()
+    if not title or len(title) > 180 or not valid_pdf_url(url):
+        flash("Enter a valid title and HTTP/HTTPS PDF link.", "danger")
+        return redirect(url_for("admin"))
+    with db() as conn:
+        conn.execute(
+            "INSERT INTO pdf_links (title, url) VALUES (?, ?)",
+            (title, url)
+        )
+    flash("PDF link added successfully.", "success")
+    return redirect(url_for("admin"))
+
+
+@app.route("/admin/pdf/<int:pdf_id>/edit", methods=["POST"])
+@admin_required
+def edit_pdf(pdf_id):
+    title = request.form.get("title", "").strip()
+    url = request.form.get("url", "").strip()
+    if not title or len(title) > 180 or not valid_pdf_url(url):
+        flash("Enter a valid title and HTTP/HTTPS PDF link.", "danger")
+        return redirect(url_for("admin", edit_pdf=pdf_id))
+    with db() as conn:
+        result = conn.execute(
+            "UPDATE pdf_links SET title=?, url=? WHERE id=?",
+            (title, url, pdf_id)
+        )
+    flash("PDF link updated." if result.rowcount else "PDF not found.", "success")
+    return redirect(url_for("admin"))
+
+
+@app.route("/admin/pdf/<int:pdf_id>/delete", methods=["POST"])
+@admin_required
+def delete_pdf(pdf_id):
+    with db() as conn:
+        conn.execute("DELETE FROM pdf_links WHERE id=?", (pdf_id,))
+    flash("PDF link deleted.", "success")
     return redirect(url_for("admin"))
 
 @app.errorhandler(413)

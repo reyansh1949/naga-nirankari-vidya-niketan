@@ -1,17 +1,44 @@
 {% extends "base.html" %}
 {% block title %}{{ school_name }} | Learn Online{% endblock %}
 {% block content %}
+
 <section class="hero">
   <div class="hero-badge">📚 YOUR LEARNING SPACE</div>
   <h1>Learn better.<br><span>Grow brighter.</span></h1>
 </section>
-<div class="section-heading"><div><h2>Choose your class</h2></div></div>
+
+<div class="section-heading">
+  <div><h2>Choose your class</h2></div>
+</div>
+
 <div class="class-grid">
 {% for c in classes %}
 <a class="class-card" href="{{ url_for('class_page', class_name=c) }}">
-  <div class="class-art art-{{ loop.index }}"><span>{{ "%02d"|format(loop.index) }}</span><b>✦</b></div>
-  <div class="class-info"><span class="eyebrow">SCHOOL CURRICULUM</span><h3>{{ c }}</h3><p>Physics · Chemistry · Biology · Maths</p><span class="arrow">Explore lessons ↗</span></div>
+  <div class="class-art art-{{ loop.index }}">
+    <span>{{ "%02d"|format(loop.index) }}</span><b>✦</b>
+  </div>
+  <div class="class-info">
+    <span class="eyebrow">SCHOOL CURRICULUM</span>
+    <h3>{{ c }}</h3>
+    <p>Physics · Chemistry · Biology · Maths</p>
+    <span class="arrow">Explore lessons ↗</span>
+  </div>
 </a>
 {% endfor %}
 </div>
+
+<section class="panel wide-panel" style="margin-top: 28px;">
+  <div class="panel-title">
+    <span class="panel-icon">📄</span>
+    <div>
+      <h2>Study PDFs</h2>
+      <p>School notes and learning resources</p>
+    </div>
+  </div>
+
+  <a class="btn primary" href="{{ url_for('pdfs_page') }}">
+    📄 Open PDF Library ↗
+  </a>
+</section>
+
 {% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}PDF Resources | {{ school_name }}{% endblock %}
+{% block content %}
+<section class="hero">
+<div class="hero-badge">📄 STUDY RESOURCES</div>
+<h1>PDF <span>Library</span></h1>
+<p>School notes and learning resources</p>
+</section>
+<section class="panel wide-panel">
+<div class="panel-title"><div><h2>Available PDFs</h2><p>Click any title to open its link.</p></div></div>
+{% if pdfs %}
+<div class="uploaded-list">
+{% for p in pdfs %}
+<div class="uploaded-item">
+<div class="play-mini">{{ loop.index }}</div>
+<div class="uploaded-text">
+<a href="{{ p.url }}" target="_blank" rel="noopener noreferrer"><b>{{ p.title }}</b></a>
+</div>
+<a class="btn secondary small" href="{{ p.url }}" target="_blank" rel="noopener noreferrer">Open ↗</a>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p class="muted">No PDF links available yet.</p>
+{% endif %}
+<a class="btn secondary" href="{{ url_for('index') }}">← Back to Home</a>
+</section>
+{% endblock %}
